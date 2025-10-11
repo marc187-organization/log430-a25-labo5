@@ -40,6 +40,17 @@
       ]
     },
     {
+      "endpoint": "/store-manager-api/orders/{order_id}",
+      "method": "GET", 
+      "backend": [
+        {
+          "url_pattern": "/orders/{order_id}",
+          "host": ["http://store_manager:5000"],
+          "timeout": "5s"
+        }
+      ]
+    },
+    {
       "endpoint": "/payments-api/payments",
       "method": "POST", 
       "backend": [
