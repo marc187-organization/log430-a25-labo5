@@ -10,7 +10,7 @@ from flask import Flask, request, jsonify
 from orders.controllers.order_controller import create_order, remove_order, get_order, get_report_highest_spending_users, get_report_best_selling_products, update_order
 from orders.controllers.user_controller import create_user, remove_user, get_user
 from stocks.controllers.product_controller import create_product, remove_product, get_product
-from stocks.controllers.stock_controller import get_stock, populate_redis_on_startup, set_stock, get_stock_overview
+from stocks.controllers.stock_controller import get_stock, populate_redis_on_startup, set_stock, get_stock_overview, update_stock
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
  
 app = Flask(__name__)
@@ -65,6 +65,11 @@ def delete_users_id(user_id):
 def post_stocks():
     """Set product stock based on information on request body"""
     return set_stock(request)
+
+@app.put('/stocks')
+def put_stocks():
+    """Check in/out product stock for given product_id and quantity"""
+    return update_stock(request)
 
 # Read routes (Queries) 
 @app.get('/orders/<int:order_id>')
