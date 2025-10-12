@@ -36,6 +36,32 @@
 					"response": []
 				},
 				{
+					"name": "/stocks",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"items\": [{\"product_id\": 1, \"quantity\": 3}, {\"product_id\": 2, \"quantity\": 2}],\n    \"operation\": \"+\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/stocks",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"stocks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "/stocks/:id",
 					"request": {
 						"method": "GET",
@@ -80,7 +106,7 @@
 						"body": {
 							"mode": "graphql",
 							"graphql": {
-								"query": "{\n  product(id: \"1\") {\n    id\n    name\n    quantity\n  }\n}\n",
+								"query": "{\n  product(id: \"3\") {\n    id\n    name\n    quantity\n  }\n}\n",
 								"variables": ""
 							}
 						},
@@ -109,7 +135,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"user_id\": 1,\n    \"items\": [{\"product_id\": 1, \"quantity\": 2}]\n}",
+							"raw": "{\n    \"user_id\": 1,\n    \"items\": [{\"product_id\": 3, \"quantity\": 2}, {\"product_id\": 2, \"quantity\": 4}]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -152,13 +178,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/orders/6",
+							"raw": "{{baseURL}}/orders/1",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"orders",
-								"6"
+								"1"
 							]
 						}
 					},
