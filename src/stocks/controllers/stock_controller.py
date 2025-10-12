@@ -23,15 +23,11 @@ def set_stock(request):
 def update_stock(request):
     """Update stock quantities of a product based on given operation (+/-)"""
     payload = request.get_json() or {}
-    product_id = payload.get('product_id')
+    items = payload.get('items')
     operation = payload.get('operation')
-    quantity = payload.get('quantity')
     try:
         session = get_sqlalchemy_session()
-        result = update_stock_mysql(session, {
-            "product_id": product_id,
-            "quantity": quantity,
-        }, operation)
+        result = update_stock_mysql(session, items, operation)
         return jsonify({'result': result}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500
