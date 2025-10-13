@@ -62,13 +62,13 @@ def add_order(user_id: int, items: list):
             session.add(order_item)
 
         # Update stock
-        check_out_items_from_stock(session, order_items)
+        #check_out_items_from_stock(session, order_items)
 
         session.commit()
 
         # Insert order into Redis
-        update_stock_redis(order_items, '-')
-        add_order_to_redis(order_id, user_id, total_amount, items, new_order.payment_link)
+        #update_stock_redis(order_items, '-')
+        #add_order_to_redis(order_id, user_id, total_amount, items, new_order.payment_link)
         return order_id
 
     except Exception as e:
@@ -126,12 +126,12 @@ def delete_order(order_id: int):
             # MySQL
             order_items = session.query(OrderItem).filter(OrderItem.order_id == order_id).all()
             session.delete(order)
-            check_in_items_to_stock(session, order_items)
+            #check_in_items_to_stock(session, order_items)
             session.commit()
 
             # Redis
-            update_stock_redis(order_items, '+')
-            delete_order_from_redis(order_id)
+            #update_stock_redis(order_items, '+')
+            #delete_order_from_redis(order_id)
             return 1  
         else:
             return 0  
