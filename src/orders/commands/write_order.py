@@ -26,7 +26,7 @@ def add_order(user_id: int, items: list):
         price_map = {product.id: product.price for product in products_query}
         total_amount = 0
         order_items = []
-        
+
         for item in items:
             pid = item["product_id"]
             qty = item["quantity"]
@@ -45,13 +45,13 @@ def add_order(user_id: int, items: list):
 
         new_order = Order(user_id=user_id, total_amount=total_amount, payment_link=None)
         session.add(new_order)
-        session.flush()   
+        session.flush()
 
         order_id = new_order.id
 
         new_order.payment_link = request_payment_link(new_order.id, total_amount, user_id)
-        session.flush()  
-        
+        session.flush()
+
         for item in order_items:
             order_item = OrderItem(
                 order_id=order_id,
@@ -108,13 +108,18 @@ def request_payment_link(order_id, total_amount, user_id):
     }
 
     # TODO: Requête à POST /payments
-    print("")
-    response_from_payment_service = {}
+    response_from_payment_service = requests.post(
+        'http://api-gateway:8080/payments-api/payments',
+        json=payment_transaction,
+        headers={'Content-Type': 'application/json'}
+    )
 
-    if True: # if response.ok
+    if response_from_payment_service.ok:
+        data = response_from_payment_service.json()
+        payment_id = data.get("payment_id")
         print(f"ID paiement: {payment_id}")
 
-    return f"http://api-gateway:8080/payments-api/payments/process/{payment_id}" 
+    return f"http://api-gateway:8080/payments-api/payments/process/{payment_id}"
 
 def delete_order(order_id: int):
     """Delete order in MySQL, keep Redis in sync"""
@@ -132,10 +137,10 @@ def delete_order(order_id: int):
             # Redis
             update_stock_redis(order_items, '+')
             delete_order_from_redis(order_id)
-            return 1  
+            return 1
         else:
-            return 0  
-            
+            return 0
+
     except Exception as e:
         session.rollback()
         raise e
