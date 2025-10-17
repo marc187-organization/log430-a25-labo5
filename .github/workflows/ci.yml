@@ -24,7 +24,7 @@ jobs:
                   PYTHONUNBUFFERED=1
                   EOF
 
-            - name: Create external network
+            - name: Create network
               run: docker network create labo05-network || true
 
             - name: Start services
@@ -33,7 +33,7 @@ jobs:
             - name: Wait for MySQL to be ready
               run: |
                   for i in {1..40}; do
-                    if docker compose exec -T mysql mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
+                    if docker compose exec -T mysql mysqladmin ping -uroot -proot; then
                       exit 0
                     fi
                     sleep 2
@@ -43,16 +43,8 @@ jobs:
             - name: Start Krakend + app
               run: docker compose up -d --build krakend store_manager
 
-            - name: Install dependencies inside container (if present)
-              run: |
-                  if [ -f requirements.txt ]; then
-                  docker compose exec -T store_manager pip install -r /app/requirements.txt
-                  elif [ -f src/requirements.txt ]; then
-                  docker compose exec -T store_manager pip install -r /app/src/requirements.txt
-                  else
-                  echo "No requirements.txt found; installing pytest only"
-                  docker compose exec -T store_manager python -m pip install -U pytest
-                  fi
+            - name: Install pip dependencies
+              run: docker compose exec -T store_manager pip install -r /app/requirements.txt
 
             - name: Run pytest inside app container
               run: docker compose exec -T store_manager pytest
