@@ -1,74 +1,54 @@
-name: CI
+name: CI - pytest
 
 on:
-  push:
+    push:
+    pull_request:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
 
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: labo04_db
-          MYSQL_USER: labo04
-          MYSQL_PASSWORD: labo04
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost -uroot -proot --silent"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=30
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd="redis-cli ping || exit 1"
-          --health-interval=5s
-          --health-timeout=3s
-          --health-retries=30
+            - name: Create .env for CI
+              run: |
+                  cat > .env <<'EOF'
+                  DB_HOST=mysql
+                  DB_PORT=3306
+                  DB_NAME=labo04_db
+                  DB_USER=labo04
+                  DB_PASS=labo04
+                  REDIS_HOST=redis
+                  REDIS_PORT=6379
+                  REDIS_DB=0
+                  PYTHONUNBUFFERED=1
+                  EOF
 
-    steps:
-      - uses: actions/checkout@v4
+            - name: Create external network
+              run: docker network create labo05-network || true
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+            - name: Start services
+              run: docker compose up -d --build mysql redis
 
-      - name: Install mysql client + deps
-        run: |
-          sudo apt-get update && sudo apt-get install -y default-mysql-client
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          python -m pip install pytest
+            - name: Wait for MySQL to be ready
+              run: |
+                  for i in {1..40}; do
+                    if docker compose exec -T mysql mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
+                      exit 0
+                    fi
+                    sleep 2
+                  done
+                  exit 1
 
-      - name: Wait for MySQL
-        run: |
-          for i in {1..60}; do
-            if mysql -h 127.0.0.1 -uroot -proot -e "SELECT 1" >/dev/null 2>&1; then
-              exit 0
-            fi
-            sleep 2
-          done
-          exit 1
+            - name: Start Krakend + app
+              run: docker compose up -d --build krakend store_manager
 
-      - name: Init schema (if present)
-        if: hashFiles('db-init/*.sql') != ''
-        run: cat db-init/*.sql | mysql -h 127.0.0.1 -uroot -proot labo04_db
+            - name: Install all Python dependencies
+              run: docker compose exec -T store_manager pip install -r requirements.txt
 
-      - name: Run pytest
-        env:
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_NAME: labo04_db
-          DB_USER: labo04
-          DB_PASS: labo04
-          REDIS_HOST: 127.0.0.1
-          REDIS_PORT: 6379
-          REDIS_DB: 0
-          PYTHONPATH: ${{ github.workspace }}/src
-        run: pytest
+            - name: Run pytest inside app container
+              run: docker compose exec -T store_manager pytest
+
+            - name: Teardown
+              if: always()
+              run: docker compose down -v
