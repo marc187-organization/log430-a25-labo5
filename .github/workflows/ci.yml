@@ -2,8 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
 
 jobs:
   test:
@@ -24,7 +22,6 @@ jobs:
           --health-interval=5s
           --health-timeout=5s
           --health-retries=30
-
       redis:
         image: redis:7
         ports:
@@ -38,59 +35,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install system tools
+      - name: Install mysql client + deps
         run: |
-          sudo apt-get update
-          sudo apt-get install -y default-mysql-client
-
-      - name: Install dependencies
-        run: |
+          sudo apt-get update && sudo apt-get install -y default-mysql-client
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           python -m pip install pytest
 
-      - name: Wait for MySQL to be ready
+      - name: Wait for MySQL
         run: |
           for i in {1..60}; do
             if mysql -h 127.0.0.1 -uroot -proot -e "SELECT 1" >/dev/null 2>&1; then
-              echo "MySQL is up!"
               exit 0
             fi
-            echo "Waiting for MySQL... ($i/60)"
             sleep 2
           done
-          echo "MySQL did not become ready in time"; exit 1
+          exit 1
 
-      - name: Initialize schema (from db-init/)
+      - name: Init schema (if present)
         if: hashFiles('db-init/*.sql') != ''
-        run: |
-          cat db-init/*.sql | mysql -h 127.0.0.1 -uroot -proot labo04_db
+        run: cat db-init/*.sql | mysql -h 127.0.0.1 -uroot -proot labo04_db
 
-      - name: Create .env for tests
-        run: |
-          {
-            echo "DB_HOST=127.0.0.1"
-            echo "DB_PORT=3306"
-            echo "DB_NAME=labo04_db"
-            echo "DB_USER=labo04"
-            echo "DB_PASS=labo04"
-            echo "REDIS_HOST=127.0.0.1"
-            echo "REDIS_PORT=6379"
-            echo "REDIS_DB=0"
-            echo "PYTHONUNBUFFERED=1"
-          } > .env
-
-      # Optional: only if your code is under src/
-      - name: Add src to PYTHONPATH
-        if: hashFiles('src/**') != ''
-        run: echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV
-
-      - name: Run tests
+      - name: Run pytest
         env:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
@@ -100,6 +70,5 @@ jobs:
           REDIS_HOST: 127.0.0.1
           REDIS_PORT: 6379
           REDIS_DB: 0
-          PYTHONUNBUFFERED: 1
-          PYTHONPATH: ${{ env.PYTHONPATH }}
-        run: pytest -q --maxfail=1 --disable-warnings
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: pytest
