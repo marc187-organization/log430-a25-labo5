@@ -1,0 +1,36 @@
+name: CI - pytest
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create external network (if missing)
+        run: docker network create labo05-network || true
+
+      - name: Start services (mysql, redis, app)
+        run: docker compose up -d --build mysql redis store_manager
+
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            if docker compose exec -T mysql mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
+              echo "MySQL is ready"
+              exit 0
+            fi
+            echo "Waiting for MySQL... ($i/30)"
+            sleep 2
+          done
+          echo "MySQL not ready in time" && exit 1
+
+      - name: Run pytest inside app container
+        run: docker compose exec -T store_manager pytest
+
+      - name: Teardown
+        if: always()
+        run: docker compose down -v
