@@ -13,14 +13,9 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - name: Check runner environment
-        run: |
-          docker --version
-          docker compose version || docker-compose version || true
-
       - uses: actions/checkout@v4
 
-      - name: Create/Update .env for production
+      - name: Create/Update .env
         run: |
           cat > .env << 'EOF'
           DB_HOST=mysql
@@ -31,7 +26,6 @@ jobs:
           REDIS_HOST=redis
           REDIS_PORT=6379
           REDIS_DB=0
-          FLASK_ENV=production
           EOF
 
       - name: Pull & build
