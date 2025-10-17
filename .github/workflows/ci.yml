@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  Test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,6 +29,16 @@ jobs:
           echo "MySQL not ready in time" && exit 1
 
       - name: Run pytest inside app container
+        env:
+            DB_HOST: mysql
+            DB_PORT: 3306
+            DB_NAME: labo04_db
+            DB_USER: labo04
+            DB_PASS: labo04
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+            REDIS_DB: 0
+            PYTHONUNBUFFERED: 1
         run: docker compose exec -T store_manager pytest
 
       - name: Teardown
