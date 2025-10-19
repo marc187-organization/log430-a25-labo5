@@ -27,6 +27,17 @@
           "timeout": "5s"
         }
       ]
+    },
+    {
+      "endpoint": "/store-manager-api/users",
+      "method": "POST", 
+      "backend": [
+        {
+          "url_pattern": "/users",
+          "host": ["http://store_manager:5000"],
+          "timeout": "5s"
+        }
+      ]
     }
   ]
 }

@@ -17,6 +17,7 @@ def create_user(request):
         user_id = add_user(name, email)
         return jsonify({'user_id': user_id}), 201
     except Exception as e:
+        print(e)
         return jsonify({'error': str(e)}), 500
 
 def remove_user(user_id):
@@ -27,6 +28,7 @@ def remove_user(user_id):
             return jsonify({'deleted': True})
         return jsonify({'deleted': False}), 404
     except Exception as e:
+        print(e)
         return jsonify({'error': str(e)}), 500
 
 def get_user(user_id):

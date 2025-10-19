@@ -9,7 +9,7 @@ services:
     ports:
       - "5000:5000"
     networks:
-      - labo05-network
+      - labo07-network
     depends_on:
       - mysql
       - redis
@@ -24,26 +24,7 @@ services:
      depends_on:
       - store_manager
      networks:
-       - labo05-network
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-    networks:
-      - labo05-network
-    depends_on:
-      - store_manager
+       - labo07-network
 
   mysql:
     image: mysql:8
@@ -54,7 +35,7 @@ services:
       MYSQL_USER: labo04
       MYSQL_PASSWORD: labo04
     networks:
-      - labo05-network
+      - labo07-network
     ports:
       - "3306:3306"
     volumes:
@@ -65,7 +46,7 @@ services:
     image: redis:7
     restart: unless-stopped
     networks:
-      - labo05-network
+      - labo07-network
     ports:
       - "6379:6379"
 
@@ -77,12 +58,12 @@ services:
     volumes:
       - ./config/krakend.json:/etc/krakend/krakend.json
     networks:
-      - labo05-network
+      - labo07-network
     depends_on:
       - store_manager
 
 networks:
-  labo05-network:
+  labo07-network:
     external: true
 
 volumes:
