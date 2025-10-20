@@ -12,13 +12,13 @@
 
 Dans ce labo, nous allons ajouter des fonctionnalités de paiement à notre application `store_manager`. Ainsi comme nous avons les répertoires `orders` et `stocks` dans notre projet, nous pourrions simplement ajouter un répertoire `payments` et commencer à écrire nos fonctionnalités de paiement. Cependant, il vaut mieux développer une application complètement isolée dans un dépôt séparé - un microservice - pour les paiements en lieu de l'ajouter au `store_manager`. Ça nous donne plus de flexibilité de déploiement et évolution. Pour en savoir plus, veuillez lire la documentation architecturale dans le répertoire `/docs/arc42/architecture.pdf`.
 
-> ⚠️ ATTENTION : Pendant ce laboratoire, nous allons travailler avec ce dépôt (`log430-a25-labo5`), ainsi qu'avec un **deuxième dépôt**, `log430-a25-labo5-paiement`. Veuillez lire le document `/docs/adr/adr001.md` dans `log430-a25-labo5-paiement` pour comprendre notre choix de créer un microservice séparé pour les fonctionnalités de paiement.
+> ⚠️ ATTENTION : Pendant ce laboratoire, nous allons travailler avec ce dépôt (`log430-a25-labo5`), ainsi qu'avec un **deuxième dépôt**, [log430-a25-labo5-paiement](https://github.com/guteacher/log430-a25-labo5-payment). Veuillez lire le document `/docs/adr/adr001.md` dans `log430-a25-labo5-paiement` pour comprendre notre choix de créer un microservice séparé pour les fonctionnalités de paiement.
 
 ### 1. Clonez les dépôts
 Créez vos propres dépôts à partir des dépôts gabarits (templates). Vous pouvez modifier la visibilité pour les rendre privés si vous voulez.
 ```bash
-git clone https://github.com/guteacher/log430-a25-labo5
-git clone https://github.com/guteacher/log430-a25-labo5-paiement
+git clone https://github.com/[votrenom]/log430-a25-labo5
+git clone https://github.com/[votrenom]/log430-a25-labo5-paiement
 cd log430-a25-labo5
 ```
 Ensuite, clonez votre dépôt sur votre ordinateur et sur votre serveur de déploiement (ex. VM). Veillez à ne pas cloner le dépôt d'origine.
@@ -79,7 +79,7 @@ Dans `orders/commands/write_order.py`, la fonction `add_order` effectue la créa
 > 💡 **Question 3** : Quel résultat obtenons-nous de la requête à `POST payments/process/:id`?
 
 ### 3. Ajoutez un nouveau endpoint à KrakenD
-Ajoutez l'endpoint de création de commandes à `config/krakend.json`. Nous l'utiliserons lors des prochaines activités. 
+Ajoutez l'endpoint de création de commandes à `config/krakend.json`. Nous l'utiliserons lors des prochaines activités. Ce code ajoute une [limitation du nombre de requêtes](https://www.krakend.io/docs/endpoints/rate-limit/) à nos endpoints (10 requêtes par minute, par client).
 ```json
   {
       "endpoint": "/store-api/orders",
@@ -93,7 +93,7 @@ Ajoutez l'endpoint de création de commandes à `config/krakend.json`. Nous l'ut
       "extra_config": {
         "qos/ratelimit/router": {
           "max_rate": 10,
-          "capacity": 10
+          "every": "1m",
         }
       }
   },
