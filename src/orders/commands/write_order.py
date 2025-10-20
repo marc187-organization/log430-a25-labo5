@@ -112,8 +112,6 @@ def request_payment_link(order_id, total_amount, user_id):
         "total_amount": total_amount
     }
 
-    # TODO: Requête à POST /payments
-    print("")
     response_from_payment_service = {}
 
     if True: # if response.ok

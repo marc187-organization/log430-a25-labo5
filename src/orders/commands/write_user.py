@@ -43,14 +43,7 @@ def delete_user(user_id: int):
         if user:
             session.delete(user)
             session.commit()
-            producer = KafkaProducer(
-                bootstrap_servers='kafka:9092',
-                value_serializer=lambda dict: json.dumps(dict).encode('utf-8')
-            )
-            producer.send('user-events', value={'event': 'UserDeleted', 
-                                            'id': user.id, 
-                                            'name': user.name,
-                                            'email': user.email})
+            # TODO: envoyer un evenement UserDeleted à Kafka
             return 1  
         else:
             return 0  

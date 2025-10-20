@@ -17,5 +17,4 @@ class FlaskAPIUser(HttpUser):
     @task(1)
     def test_rate_limit(self):
         """Test pour vérifier le rate limiting"""
-        # TODO: écrivez le test
         print("Test")

@@ -3,6 +3,7 @@ CREATE DATABASE IF NOT EXISTS labo05_db;
 USE labo05_db;
 
 -- Users table
+-- TODO: ajouter UserTypes
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
