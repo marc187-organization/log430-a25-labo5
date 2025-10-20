@@ -11,8 +11,10 @@ services:
     networks:
       - labo07-network
     depends_on:
-      - mysql
-      - redis
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   locust:
      image: locustio/locust
@@ -41,6 +43,12 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -proot"]
+      interval: 1m
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   redis:
     image: redis:7
@@ -49,6 +57,12 @@ services:
       - labo07-network
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1m
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   krakend:
     image: devopsfaith/krakend:2.4
