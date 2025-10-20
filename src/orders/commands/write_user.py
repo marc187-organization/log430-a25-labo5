@@ -5,10 +5,9 @@ Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 import json
 import datetime
+from kafka_manager import KafkaManager
 from orders.models.user import User
 from db import get_sqlalchemy_session
-from kafka import KafkaProducer
-
 
 def add_user(name: str, email: str):
     """Insert user with items in MySQL"""
@@ -23,11 +22,8 @@ def add_user(name: str, email: str):
         session.flush() 
         session.commit()
 
-        producer = KafkaProducer(
-            bootstrap_servers='kafka:9092',
-            value_serializer=lambda dict: json.dumps(dict).encode('utf-8')
-        )
-        producer.send('user-events', value={'event': 'UserCreated', 
+        kafka = KafkaManager()
+        kafka.producer.send('user-events', value={'event': 'UserCreated', 
                                            'id': new_user.id, 
                                            'name': new_user.name,
                                            'email': new_user.email,
