@@ -1,5 +1,5 @@
 """
-Kafka manager
+Kafka user event producer
 SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
@@ -9,7 +9,7 @@ import config
 from singleton import Singleton
 from kafka import KafkaProducer
 
-class KafkaManager(metaclass=Singleton):
+class UserEventProducer(metaclass=Singleton):
 
   def __init__(self):
     """ Initialize KafkaProducer """

@@ -5,7 +5,7 @@ Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 import json
 import datetime
-from kafka_manager import KafkaManager
+from orders.commands.user_event_producer import UserEventProducer
 from orders.models.user import User
 from db import get_sqlalchemy_session
 
@@ -22,7 +22,7 @@ def add_user(name: str, email: str):
         session.flush() 
         session.commit()
 
-        kafka = KafkaManager()
+        kafka = UserEventProducer()
         kafka.producer.send('user-events', value={'event': 'UserCreated', 
                                            'id': new_user.id, 
                                            'name': new_user.name,
