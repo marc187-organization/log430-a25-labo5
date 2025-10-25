@@ -21,7 +21,8 @@ def get_mysql_conn():
         port=config.DB_PORT,
         user=config.DB_USER,
         password=config.DB_PASSWORD,
-        database=config.DB_NAME
+        database=config.DB_NAME,
+        auth_plugin='caching_sha2_password'
     )
 
 def get_redis_conn():
