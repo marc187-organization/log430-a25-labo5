@@ -9,7 +9,7 @@ services:
     ports:
       - "5000:5000"
     networks:
-      - labo07-network
+      - labo05-network
     depends_on:
       mysql:
         condition: service_healthy
@@ -26,7 +26,7 @@ services:
      depends_on:
       - store_manager
      networks:
-       - labo07-network
+       - labo05-network
 
   mysql:
     image: mysql:8.4.7
@@ -37,7 +37,7 @@ services:
       MYSQL_USER: labo05
       MYSQL_PASSWORD: labo05
     networks:
-      - labo07-network
+      - labo05-network
     ports:
       - "3306:3306"
     volumes:
@@ -54,7 +54,7 @@ services:
     image: redis:7
     restart: unless-stopped
     networks:
-      - labo07-network
+      - labo05-network
     ports:
       - "6379:6379"
     healthcheck:
@@ -72,12 +72,12 @@ services:
     volumes:
       - ./config/krakend.json:/etc/krakend/krakend.json
     networks:
-      - labo07-network
+      - labo05-network
     depends_on:
       - store_manager
 
 networks:
-  labo07-network:
+  labo05-network:
     external: true
 
 volumes:
