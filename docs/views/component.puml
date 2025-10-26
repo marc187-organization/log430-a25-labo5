@@ -19,8 +19,8 @@ package Model {
     [User] 
 }
 
-package Consumer {
-    [UserEventConsumer] 
+package Coolriel {
+    [coolriel.py] 
 }
 
 
@@ -31,5 +31,5 @@ package Consumer {
 [WriteUser] --> [User] : Créer/supprimer un utilisateur 
 [User] --> [WriteUser] : Notifier le write model
 [WriteUser] --> [UserEventProducer] : Envoyer un courriel de notification
-[UserEventProducer] --> [UserEventConsumer] : Voir log430-labo7-emails (Coolriel)
+[UserEventProducer] --> [coolriel.py] : Voir log430-labo7-emails (Coolriel)
 @enduml
