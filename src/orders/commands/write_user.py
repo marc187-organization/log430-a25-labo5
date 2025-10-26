@@ -22,8 +22,8 @@ def add_user(name: str, email: str):
         session.flush() 
         session.commit()
 
-        kafka = UserEventProducer()
-        kafka.producer.send('user-events', value={'event': 'UserCreated', 
+        user_event_producer = UserEventProducer()
+        user_event_producer.get_instance().send('user-events', value={'event': 'UserCreated', 
                                            'id': new_user.id, 
                                            'name': new_user.name,
                                            'email': new_user.email,

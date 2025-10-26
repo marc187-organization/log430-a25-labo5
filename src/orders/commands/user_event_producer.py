@@ -17,3 +17,6 @@ class UserEventProducer(metaclass=Singleton):
       bootstrap_servers=config.KAFKA_HOST,
       value_serializer=lambda dict: json.dumps(dict).encode('utf-8')
     )
+    
+  def get_instance(self):
+    return self.producer
