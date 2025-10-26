@@ -8,7 +8,5 @@ cryptography>=45.0
 redis>=4.0
 graphene>=3.4
 requests>=2.32
-prometheus-client 
-prometheus-flask-exporter
 locust
 kafka-python==2.2.15
