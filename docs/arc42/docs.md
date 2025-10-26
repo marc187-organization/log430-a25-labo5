@@ -12,6 +12,7 @@ L'application « Store Manager » est un système avec architecture microservice
 - La comparaison des approches REST vs GraphQL
 - L'optimisation des jointures SQL avec SQLAlchemy
 - L'utilisation d'un API Gateway (KrakenD) pour le contrôle de timeout et rate limiting
+- L'utilisation d'un broker Kafka pour la communication asynchrone avec des microservices
 - La transition vers une architecture microservices avec séparation des responsabilités
 
 Nous ferons évoluer ce projet tout au long du cours LOG430, en intégrant de nouvelles fonctionnalités et en faisant évoluer notre architecture pour répondre aux nouvelles exigences.
@@ -85,6 +86,7 @@ Le système permet aux employé·es du magasin de :
 - **Models avec SQLAlchemy** : Abstraction de l'accès aux bases de données
 - **Cache Redis** : Mise en cache des données de stock pour la performance
 - **Schéma GraphQL** : Interface de requête flexible pour les fournisseurs
+- **Kafka Producer** : Producteur d'evenements qui seront envoyés à Kafka qui, à son tour, notifiera d'autres microservices
 
 ## 6. Vue d'exécution
 ![Use Case](use_case.png)
@@ -94,6 +96,7 @@ Le système permet aux employé·es du magasin de :
 2. **Rapports de stock** : Génération de rapports de stock complets avec détails des articles
 3. **Requêtes GraphQL** : Fournisseurs interrogent des champs de données de stock spécifiques
 4. **Réapprovisionnement de stock** : Ajout de quantités de stock aux articles existants
+5. **Géstion des notifications par courriel** : Notifier les utilisateurs par courriel sur l'ajout ou suppression de son enregistrement dans Store Manager
 
 ## 7. Vue de déploiement
 ![Deployment](deployment.png)

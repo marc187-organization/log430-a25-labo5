@@ -69,6 +69,14 @@
         + get_stock_overview() : JSONArray
     }
 
+    class UserEventProducer {
+        + get_instance() : KafkaProducer
+    }
+
+    class KafkaProducer {
+        + send(str, JSONObject) : void
+    }
+
     OrderItem --> Order
     User <-- Order
     Product <-- OrderItem
@@ -76,6 +84,8 @@
     WriteOrder --> OrderItem
     WriteOrder --> Product
     WriteOrder --> WriteStock
+    WriteOrder --> UserEventProducer
+    UserEventProducer --> KafkaProducer
     WriteStock --> Stock
     OrderController --> WriteOrder
     OrderController --> ReadOrder

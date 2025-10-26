@@ -1,41 +1,35 @@
 @startuml
 package View {
-    [OrderView] 
+    [@app.post('/users')] 
 }
 
 package Controller {
-    [OrderController] 
+    [UserController] 
 }
 
 package WriteModel {
-    [WriteOrder] 
-    [WriteStock] 
+    [WriteUser] 
 }
 
-package ReadModel {
-    [ReadOrder] 
+package Producer {
+    [UserEventProducer] 
 }
 
 package Model {
-    [Order] 
-    [OrderItem]
-    [Stock] 
+    [User] 
 }
 
-[OrderView] --> [OrderController] : Demander la création d'une commande
-[OrderController] --> [WriteOrder] : Créer une commande
-[WriteOrder] --> [OrderController] : Notifier le Controller
-[OrderController] --> [WriteStock] : Mettre à jour le stock
-[WriteStock] --> [OrderController] : Notifier le Controller
-[OrderController] --> [OrderView] : Mettre à jour la View 
-[WriteOrder] --> [Order] : Créer une commande 
-[Order] --> [WriteOrder] : Notifier le write model
-[WriteOrder] --> [OrderItem] : Créer les articles dans la commande 
-[OrderItem] --> [WriteOrder] : Notifier le write model
-[WriteStock] --> [Stock] : Mettre à jour le stock
-[Stock] --> [WriteStock] : Notifier le write model
-[OrderController] --> [ReadOrder] : Chercher la liste de commandes
-[ReadOrder] --> [OrderController] : Notifier le Controller
-[ReadOrder] --> [Order] : Sélectionner les derniéres commandes
-[Order] --> [ReadOrder] : Notifier le read model
+package Consumer {
+    [UserEventConsumer] 
+}
+
+
+[@app.post('/users')] --> [UserController] : Démander la création/suppression
+[UserController] --> [WriteUser] : Démander la création/suppression
+[WriteUser] --> [UserController] : Notifier le Controller
+[UserController] --> [@app.post('/users')] : Mettre à jour la View 
+[WriteUser] --> [User] : Créer/supprimer un utilisateur 
+[User] --> [WriteUser] : Notifier le write model
+[WriteUser] --> [UserEventProducer] : Envoyer un courriel de notification
+[UserEventProducer] --> [UserEventConsumer] : Voir log430-labo7-emails (Coolriel)
 @enduml
