@@ -4,9 +4,8 @@ SPDX - License - Identifier: LGPL - 3.0 - or -later
 Auteurs : Gabriel C. Ullmann, Fabio Petrillo, 2025
 """
 import json
-from logger import Logger
 import requests
-from flask import request
+from logger import Logger
 from orders.models.order import Order
 from stocks.models.product import Product
 from sqlalchemy.exc import SQLAlchemyError
@@ -115,12 +114,18 @@ def request_payment_link(order_id, total_amount, user_id):
         "total_amount": total_amount
     }
 
-    # TODO: Requête à POST /payments
-    print("")
-    response_from_payment_service = {}
-
-    if True: # if response.ok
-        print(f"ID paiement: {payment_id}")
+    logger.debug("Requête à POST /payments")
+    response_from_payment_service = requests.post(
+        'http://api-gateway:8080/payments-api/payments',
+        json=payment_transaction,
+        headers={'Content-Type': 'application/json'}
+    )
+    if response_from_payment_service.ok:
+        data = response_from_payment_service.json() 
+        payment_id = data['payment_id']
+        logger.debug(f"ID paiement: {payment_id}")
+    else:
+        logger.error("Erreur:", response_from_payment_service.status_code, response_from_payment_service.text)
 
     return f"http://api-gateway:8080/payments-api/payments/process/{payment_id}" 
 
