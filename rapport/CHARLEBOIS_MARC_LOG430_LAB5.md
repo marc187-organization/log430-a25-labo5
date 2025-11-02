@@ -176,11 +176,15 @@ Dans une architecture de microservices, ce mécanisme est essentiel : il évite 
 
 Mon pipeline CI/CD fonctionne ainsi : lors de chaque push ou pull request, mon script CI s’exécute sur GitHub Actions, lance un environnement avec MySQL et Redis, installe les dépendances et exécute les tests pour valider mon code. Si tout est correct, mon script CD se déclenche automatiquement via un runner self-hosted installé sur ma VM, qui récupère le dépôt, génère le fichier .env, construit et démarre les conteneurs avec Docker Compose, puis affiche l’état et les logs pour confirmer le déploiement.
 
-On peut voir ci-dessous que les deux workflows se sont exécutés correctement, ce qui confirme que l’application a été testée puis déployée sans erreur.
+On peut voir ci-dessous que les deux workflows (CI/CD) se sont exécutés correctement pour le `store_manager`, ce qui confirme que l’application a été testée puis déployée sans erreur.
+![alt text](image-1.png)
 
+Une étape de CD a aussi été ajoutée pour le repository du `payments_api`. Il n'y avait pas de test dans ce projet alors j'ai gardé celui-ci en un seul workflow, comme on peut le voir ci-dessous, celui-ci a aussi été déployé correctement:
 
+![alt text](image-3.png)
 
 Le déploiement s’effectue sur mon runner auto-hébergé configuré sur la VM, qui exécute directement les commandes Docker.
+![alt text](image-2.png)
 
-
-La commande `docker ps` montre que les conteneurs sont bien lancés sur la VM et que l’application est en fonctionnement.
+La commande `docker ps` montre que tous les conteneurs sont bien lancés sur la VM et que l’application est en fonctionnement.
+![alt text](image.png)
