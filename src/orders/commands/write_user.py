@@ -13,18 +13,18 @@ def add_user(name: str, email: str):
     """Insert user with items in MySQL"""
     if not name or not email:
         raise ValueError("Cannot create user. A user must have name and email.")
-    
+
     session = get_sqlalchemy_session()
 
-    try: 
+    try:
         new_user = User(name=name, email=email)
         session.add(new_user)
-        session.flush() 
+        session.flush()
         session.commit()
 
         user_event_producer = UserEventProducer()
-        user_event_producer.get_instance().send('user-events', value={'event': 'UserCreated', 
-                                           'id': new_user.id, 
+        user_event_producer.get_instance().send('user-events', value={'event': 'UserCreated',
+                                           'id': new_user.id,
                                            'name': new_user.name,
                                            'email': new_user.email,
                                            'datetime': str(datetime.datetime.now())})
@@ -43,11 +43,18 @@ def delete_user(user_id: int):
         if user:
             session.delete(user)
             session.commit()
-            # TODO: envoyer un evenement UserDeleted à Kafka
-            return 1  
+
+            user_event_producer = UserEventProducer()
+            user_event_producer.get_instance().send('user-events', value={'event': 'UserDeleted',
+                                           'id': user.id,
+                                           'name': user.name,
+                                           'email': user.email,
+                                           'datetime': str(datetime.datetime.now())})
+
+            return 1
         else:
-            return 0  
-            
+            return 0
+
     except Exception as e:
         session.rollback()
         raise e
